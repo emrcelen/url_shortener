@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: url-shortener
+  profiles:
+    active: localhost
+  main:
+    allow-bean-definition-overriding: true
+  output:
+    ansi:
+      enabled: ALWAYS
+
+info:
+  component: Url Shortener
+  version: 0.0.1
+
+server:
+  port: 9090
+
+---
+spring:
+  profiles: localhost
+  cloud:
+    config:
+      uri: http://localhost:8888
+  jpa:
+    hibernate:
+      ddl-auto: update
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      properties:
+        hibernate:
+          default_schema: url_shortener
+  datasource:
+    url: "jdbc:postgresql://localhost:5433/url_shortener"
+    username: postgres
+    password: 123456
+
+security:
+  jwt:
+    secret: SecretShortenerURL003AppKeySecretShortenerURL002AppKeySecretShortenerURL001AppKey
