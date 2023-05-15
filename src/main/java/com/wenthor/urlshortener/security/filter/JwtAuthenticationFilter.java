@@ -55,10 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }catch (ExpiredJwtException ex){
-            /**
-             * Bu catch bloğu burada dursun aksi takdirde @ControllerAdvice abim hatayı yakalayamıyor.
-             * Filter esnasında hatayı yakalayabilecek bir mekanizma ilerde öğrenip yazarım.
-             */
+         
         }
 
         filterChain.doFilter(request,response);
