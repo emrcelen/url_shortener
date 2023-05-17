@@ -9,6 +9,7 @@ import com.wenthor.urlshortener.exception.exceptions.AccountInfoNotFoundExceptio
 import com.wenthor.urlshortener.exception.exceptions.AccountNotFoundException;
 import com.wenthor.urlshortener.exception.exceptions.IllegalArgumentException;
 import com.wenthor.urlshortener.exception.exceptions.LogShortUrlNotFoundException;
+import com.wenthor.urlshortener.exception.exceptions.PermKeyNotFoundException;
 import com.wenthor.urlshortener.exception.exceptions.RoleNotFoundException;
 import com.wenthor.urlshortener.exception.exceptions.ShortUrlAlreadyExistsException;
 import com.wenthor.urlshortener.exception.exceptions.ShortUrlNotCreatedException;
@@ -90,6 +91,13 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(LogShortUrlNotFoundException.class)
     public final ResponseEntity handleLogShortUrlNotFoundException(LogShortUrlNotFoundException ex, WebRequest webRequest){
+        String message = ex.getMessage();
+        Integer errorCode = ex.getExceptionCode();
+        String detail = webRequest.getDescription(false);
+        return getResponseEntity(message, detail, errorCode, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(PermKeyNotFoundException.class)
+    public final ResponseEntity handlePermKeyNotFoundException(PermKeyNotFoundException ex, WebRequest webRequest){
         String message = ex.getMessage();
         Integer errorCode = ex.getExceptionCode();
         String detail = webRequest.getDescription(false);
