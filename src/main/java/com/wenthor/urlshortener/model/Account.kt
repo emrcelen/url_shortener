@@ -19,7 +19,9 @@ data class Account(
     val logShortUrls: List<LogShortUrl>?,
     @ManyToOne(fetch = FetchType.EAGER, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    val role: Role?
+    val role: Role?,
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val key: PermKey?
 ){
     constructor(email: String,
                 password: String,
@@ -29,6 +31,7 @@ data class Account(
         password = password,
         null,
         null,
-        role = role
+        role = role,
+        null
     )
 }
