@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }catch (ExpiredJwtException ex){
-
+         
         }
 
         filterChain.doFilter(request,response);
