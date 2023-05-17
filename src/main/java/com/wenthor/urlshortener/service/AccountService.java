@@ -7,6 +7,7 @@ import com.wenthor.urlshortener.exception.exceptions.AccountInfoNotFoundExceptio
 import com.wenthor.urlshortener.exception.exceptions.AccountNotFoundException;
 import com.wenthor.urlshortener.exception.exceptions.IllegalArgumentException;
 import com.wenthor.urlshortener.model.Account;
+import com.wenthor.urlshortener.model.PermKey;
 import com.wenthor.urlshortener.model.Role;
 import com.wenthor.urlshortener.repository.AccountRepository;
 import com.wenthor.urlshortener.request.AccountLoginRequest;
@@ -30,6 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,6 +47,7 @@ public class AccountService {
     private final AccountInfoResponseConverter infoConverter;
     // Servisler:
     private final RoleService roleService;
+    private final PermKeyService permKeyService;
     private final JwtService jwtService;
     // Kayıt yaparken gerekli olan yardımcılar:
     private final AuthenticationManager authenticationManager;
@@ -55,41 +58,47 @@ public class AccountService {
 
     public AccountService(AccountRepository accountRepository, AccountRegisterResponseConverter registerConverter,
                           AccountLoginTokenResponseConverter loginTokenConverter, AccountInfoResponseConverter infoConverter, RoleService roleService,
-                          JwtService jwtService, AuthenticationManager authenticationManager,
+                          PermKeyService permKeyService, JwtService jwtService, AuthenticationManager authenticationManager,
                           PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.registerConverter = registerConverter;
         this.loginTokenConverter = loginTokenConverter;
         this.infoConverter = infoConverter;
         this.roleService = roleService;
+        this.permKeyService = permKeyService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
     }
 
 
+    @Transactional
     public AccountRegisterResponse register(AccountRegisterRequest request, String key, Locale locale) {
         if (request.getEmail() != null &&
                 request.getPassword() != null) {
-            // Her oluşturulan kullancıyı default olarak User rolünde olarak kabul ediyoruz.
             Role role = roleService.findByRoleName("ROLE_USER", locale);
-            if (key != null && key.equals(adminAccountKey))
-                role = roleService.findByRoleName("ROLE_ADMIN", locale);
-            if (key != null && key.equals(premiumAccountKey))
-                role = roleService.findByRoleName("ROLE_PREMIUM_USER", locale);
             if (!findByAccountEmail(request.getEmail()))
                 throw new AccountAlreadyCreatedException(String.format(
                         MessageUtils.getMessage(locale, MessageCodes.DEVELOPER_ACCOUNT_ALREADY_CREATED_THIS_EMAIL_MESSAGE),
                         this.getClass().getSimpleName(), request.getEmail()), request.getEmail(), locale, MessageCodes.ACCOUNT_ALREADY_CREATED_THIS_EMAIL_EXCEPTION);
+            PermKey permKey = null;
+            if(key != null && !key.isEmpty()){
+                permKey = permKeyService.getPermKey(key,request.getEmail(),locale);
+                role = permKey.getRole();
+            }
             Account account = new Account(null,
                     request.getEmail(),
                     passwordEncoder.encode(request.getPassword()),
                     null,
                     null,
-                    role);
+                    role,
+                    (!role.getName().equalsIgnoreCase("ROLE_USER")) ? permKey : null);
+            account = accountRepository.save(account);
             logger.info(String.format(MessageUtils.getMessage(locale, MessageCodes.LOG_ACCOUNT_SERVICE_SAVE),
                     request.getEmail(), registerConverter.findRoleName(role, locale)));
-            return registerConverter.convertToResponse(accountRepository.save(account), locale);
+            if(account.getKey() != null)
+                permKeyService.updatePermKey(key,account);
+            return registerConverter.convertToResponse(account, locale);
         }
         throw new IllegalArgumentException(String.format(MessageUtils.getMessage(locale, MessageCodes.DEVELOPER_ACCOUNT_ILLEGAL_ARGUMENT_MESSAGE),
                 this.getClass().getSimpleName(), "register"), "register", locale, MessageCodes.ACCOUNT_ILLEGAL_ARGUMENT_EXCEPTION);
