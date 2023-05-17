@@ -1,12 +1,9 @@
 package com.wenthor.urlshortener.utilities;
 
-import com.wenthor.urlshortener.model.Account;
-import com.wenthor.urlshortener.security.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 
 import java.security.Key;

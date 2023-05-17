@@ -5,8 +5,6 @@ import com.wenthor.urlshortener.response.LogShortUrlInfoResponse;
 import com.wenthor.urlshortener.response.LogShortUrlUserInfoResponse;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Tuple;
-import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
