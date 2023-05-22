@@ -17,7 +17,8 @@ public final class UserShortUrlResponseConverter {
                 url.getUrl(),
                 url.getShortUrl(),
                 formatter.format(url.getCreatedDate()),
-                formatter.format(url.getExpirationDate()));
+                formatter.format(url.getExpirationDate()),
+                url.getVisitor());
     }
 
     public List<UserShortUrlResponse> convertToResponse(List<ShortUrl> listUrl){

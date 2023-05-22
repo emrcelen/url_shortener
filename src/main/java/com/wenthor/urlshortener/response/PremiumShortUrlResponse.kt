@@ -5,5 +5,6 @@ data class PremiumShortUrlResponse(
     val shortUrl: String,
     val createdDate: String,
     val updatedDate: String,
-    val expirationDate: String
+    val expirationDate: String,
+    val visitor: Int
 )

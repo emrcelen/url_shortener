@@ -23,7 +23,8 @@ public final class PremiumShortUrlResponseConverter {
                 url.getShortUrl(),
                 formatter.format(url.getCreatedDate()),
                 updateDate,
-                formatter.format(url.getExpirationDate()));
+                formatter.format(url.getExpirationDate()),
+                url.getVisitor());
     }
 
     public List<PremiumShortUrlResponse> convertToResponse (List<ShortUrl> listUrl, Locale locale){

@@ -234,14 +234,16 @@ public class ShortUrlService {
         return this.shortUrlDeleteResponseConverter.convertToResponse(shortUrl, accountService.accountRemainingUrls(AccountUtils.findByAccountEmail(headers)));
     }
 
-
-    public String getByShortUrl(String short_url, Locale locale){
+    public void basicSave(ShortUrl shortUrl){
+        this.shortUrlRepository.save(shortUrl);
+    }
+    public ShortUrl getByShortUrl(String short_url, Locale locale){
         ShortUrl shortUrl = this.shortUrlRepository.findByShortUrlAndDeletedFalse(short_url).
                 orElseThrow(() -> new ShortUrlNotFoundException(String.format(
                         MessageUtils.getMessage(locale,MessageCodes.DEVELOPER_SHORT_URL_RE_DIRECT_NOT_FOUND_MESSAGE),
                         this.getClass().getSimpleName(), short_url),short_url,locale,MessageCodes.SHORT_URL_DELETE_NOT_FOUND_EXCEPTION));
         if(shortUrl.getExpirationDate().isAfter(LocalDateTime.now())){
-            return shortUrl.getUrl();
+            return shortUrl;
         }
         shortUrl.setDeleted(true);
         shortUrl.setUpdatedDate(LocalDateTime.now());

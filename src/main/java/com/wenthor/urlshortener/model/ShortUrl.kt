@@ -18,6 +18,8 @@ data class ShortUrl(
     val url: String,
     @Column(name = "short_url", nullable = false, unique = true)
     var shortUrl: String?,
+    @Column(name = "visitor")
+    var visitor: Int?,
     @Column(name="url_created_date")
     @JsonFormat(pattern = "dd/MM/yyyy")
     val createdDate: LocalDateTime?,
@@ -39,6 +41,7 @@ data class ShortUrl(
         account= account,
         url = url,
         shortUrl =  shortUrl,
+        visitor = 0,
         createdDate = LocalDateTime.now(),
         null,
         expirationDate = LocalDateTime.now().plusDays(7),
